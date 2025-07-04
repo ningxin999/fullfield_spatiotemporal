@@ -5,11 +5,11 @@
 
 A toy stripfooting problem is used, two types of outputs are generated: (1) ground surface settlement; (2) subsoil zone displacement.
 
-<img src="image-1.png" width="250">
+<img src="image-1.png" width="350">
 
 A decoder only NN architecture is used:
 
-<img src="image.png" width="450">
+<img src="image.png" width="650">
 
 
 And the results will be spatiotemporal predictions

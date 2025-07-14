@@ -1,4 +1,4 @@
-# Decoder-Only Neural Metamodel for Offshore Strip Footing Spatiotemporal Multi-Field Outputs"
+# Decoder-Only Neural Metamodel for Strip Footing Spatiotemporal Multi-Field Outputs"
 
 
   This repository contains the Python based implementation of metamodel for geotechnical multi-stage, multi-output high-dimensional outputs. 

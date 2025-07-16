@@ -22,6 +22,7 @@ And the results will be spatiotemporal predictions
 # Table of Contents
 <!-- TOC depthFrom:2 depthTo:4 withLinks:1 updateOnSave:1 orderedList:0 -->
 - [Files](#Overview)
+- [Requirements](#Requirements)
 - [Contact](#Contact)
 <!-- /TOC -->
 ---------------------
@@ -30,11 +31,20 @@ This folder contains python code and data to reproduce the results in the associ
 
 `stripfooting.ipynb` is the main file, all other python script with `.py` is the subroutines. `data.mat` is the FE input-output dataset. `requirements.txt` gives the virtual python envinorment. 
 
+---------------------
+# Requirements <a name="Requirements"></a>
+- Create a virtual envirnoment using conda
+- Install `python=3.10` with commandl line `conda install python=3.10`
+- Import all python-related packages from `requirements.txt`
+
+`stripfooting.ipynb` is the main file, all other python script with `.py` is the subroutines. `data.mat` is the FE input-output dataset. `requirements.txt` gives the virtual python envinorment. 
 
 ---------------------
 ## Contact <a name="Contact"></a>
 We are committed to open-source code and transparent, reproducible scientific research. All the data and figures in the paper are intended to be as reproducible as possible. If you encounter any issues using the code, please don't hesitate to reach out.
 
-Ningxin Yang
-
+Ningxin Yang, Imperial College London
+<img src="logo-1.png" width="150">
 n.yang23@imperial.ac.uk
+
+

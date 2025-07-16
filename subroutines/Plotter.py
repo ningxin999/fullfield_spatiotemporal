@@ -13,7 +13,8 @@ import matplotlib.gridspec as gridspec
 from matplotlib.animation import FuncAnimation
 from ipywidgets import interact, IntSlider
 from matplotlib.ticker import MaxNLocator
-from matplotlib.ticker import FormatStrFormatter
+from matplotlib.ticker import FormatStrFormatter,FuncFormatter
+from matplotlib.colors import BoundaryNorm
 from subroutines.Decorator import plot_style_decorator, scatter_plot_style_decorator, plot_disp_style_decorator
 mpl.rcParams['lines.linewidth'] = 2
 mpl.rcParams['lines.linestyle'] = '--'
@@ -254,28 +255,53 @@ class Plotter():
             cmap_true_pred = 'cividis'   # 'plasma', 'inferno'
             cmap_error = 'RdBu_r'    
             
+            vmin = y_test1[sample_idx, time_idx].min()
+            vmax = y_test1[sample_idx, time_idx].max()
+            #ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
+            ticks = np.round(np.linspace(-0.15, 0, 6), 4) 
+            
+            bounds = np.linspace(-0.15, 0, 7)
+            norm = BoundaryNorm(boundaries=bounds, ncolors=256)
+
+   
             ax0 = fig.add_subplot(gs[0])
-            im0 = ax0.imshow(y_test1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto')
+            im0 = ax0.imshow(y_test1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto', norm=norm)
             ax0.set_title(f"True: Stage {time_idx+1}",fontsize = 16)
             ax0.set_xlabel("Dim1",fontsize = 16);  ax0.set_ylabel("Dim2",fontsize = 16); 
             cbar0  = fig.colorbar(im0, ax=ax0)
-            cbar0.ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+            cbar0.set_ticks(ticks)  # 
+            cbar0.ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+            cbar0.update_ticks()  # 
+
+            # vmin = y_test_pred1[sample_idx, time_idx].min()
+            # vmax = y_test_pred1[sample_idx, time_idx].max()
+            # ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
             
             ax1 = fig.add_subplot(gs[1])
-            im1 = ax1.imshow(y_test_pred1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto')
+            im1 = ax1.imshow(y_test_pred1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto', norm=norm)
             ax1.set_title(f"Pred: Stage {time_idx+1}",fontsize = 16)
             ax1.set_xlabel("Dim1",fontsize = 16);  ax1.set_ylabel("Dim2",fontsize = 16); 
             cbar1  = fig.colorbar(im1, ax=ax1)
-            cbar1.ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+            cbar1.set_ticks(ticks)  # 
+            cbar1.ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+            cbar1.update_ticks()  # 
+
 
             
             ax2 = fig.add_subplot(gs[2])
             error = y_test1[sample_idx, time_idx] - y_test_pred1[sample_idx, time_idx]
-            im2 = ax2.imshow(error, cmap=cmap_error, aspect='auto') 
+            error[0,:] = 0
+            vmin = error.min()
+            vmax = error.max()
+            ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
+            
+            im2 = ax2.imshow(error, cmap=cmap_error, aspect='auto', vmin=vmin, vmax=vmax) 
             ax2.set_title(f"Error (True - Pred)",fontsize = 16)
             ax2.set_xlabel("Dim1",fontsize = 16);  ax2.set_ylabel("Dim2",fontsize = 16); 
             cbar2  = fig.colorbar(im2, ax=ax2)
-            cbar2.ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+            cbar2.set_ticks(ticks)  # 
+            cbar2.ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))   
+            cbar2.update_ticks()  # 
             
             plt.tight_layout()
             plt.show()
@@ -299,29 +325,59 @@ class Plotter():
             for time_idx in range(y_test_pred1.shape[1]):
                 fig = plt.figure(figsize=(15, 4))
                 gs = gridspec.GridSpec(1, 3, width_ratios=[1, 1, 1])
-                
+                    
+
                 # color setting
                 cmap_true_pred = 'cividis'   # 'plasma', 'inferno'
-                cmap_error = 'RdBu_r'          
+                cmap_error = 'RdBu_r'    
                 
+                vmin = y_test1[sample_idx, time_idx].min()
+                vmax = y_test1[sample_idx, time_idx].max()
+                #ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
+                ticks = np.round(np.linspace(-0.15, 0, 6), 4) 
+                
+                bounds = np.linspace(-0.15, 0, 7)
+                norm = BoundaryNorm(boundaries=bounds, ncolors=256)
+
+       
                 ax0 = fig.add_subplot(gs[0])
-                im0 = ax0.imshow(y_test1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto')
-                ax0.set_title(f"True - Sample {sample_idx}, Stage {time_idx + 1 }")
-                ax0.set_xlabel("Dim1");  ax0.set_ylabel("Dim2"); 
-                fig.colorbar(im0, ax=ax0)
+                im0 = ax0.imshow(y_test1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto', norm=norm)
+                ax0.set_title(f"True: Stage {time_idx+1}",fontsize = 16)
+                ax0.set_xlabel("Dim1",fontsize = 16);  ax0.set_ylabel("Dim2",fontsize = 16); 
+                cbar0  = fig.colorbar(im0, ax=ax0)
+                cbar0.set_ticks(ticks)  # 
+                cbar0.ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+                cbar0.update_ticks()  # 
+
+                # vmin = y_test_pred1[sample_idx, time_idx].min()
+                # vmax = y_test_pred1[sample_idx, time_idx].max()
+                # ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
                 
                 ax1 = fig.add_subplot(gs[1])
-                im1 = ax1.imshow(y_test_pred1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto')
-                ax1.set_title(f"Pred - Sample {sample_idx}, Stage {time_idx + 1}")
-                ax1.set_xlabel("Dim1");  ax1.set_ylabel("Dim2"); 
-                fig.colorbar(im1, ax=ax1)
+                im1 = ax1.imshow(y_test_pred1[sample_idx, time_idx], cmap=cmap_true_pred, aspect='auto', norm=norm)
+                ax1.set_title(f"Pred: Stage {time_idx+1}",fontsize = 16)
+                ax1.set_xlabel("Dim1",fontsize = 16);  ax1.set_ylabel("Dim2",fontsize = 16); 
+                cbar1  = fig.colorbar(im1, ax=ax1)
+                cbar1.set_ticks(ticks)  # 
+                cbar1.ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+                cbar1.update_ticks()  # 
+
+
                 
                 ax2 = fig.add_subplot(gs[2])
                 error = y_test1[sample_idx, time_idx] - y_test_pred1[sample_idx, time_idx]
-                im2 = ax2.imshow(error, cmap=cmap_error, aspect='auto')
-                ax2.set_title(f"Error (True - Pred)")
-                ax2.set_xlabel("Dim1");  ax2.set_ylabel("Dim2"); 
-                fig.colorbar(im2, ax=ax2)
+                error[0,:] = 0
+                vmin = error.min()
+                vmax = error.max()
+                ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
+                
+                im2 = ax2.imshow(error, cmap=cmap_error, aspect='auto', vmin=vmin, vmax=vmax) 
+                ax2.set_title(f"Error (True - Pred)",fontsize = 16)
+                ax2.set_xlabel("Dim1",fontsize = 16);  ax2.set_ylabel("Dim2",fontsize = 16); 
+                cbar2  = fig.colorbar(im2, ax=ax2)
+                cbar2.set_ticks(ticks)  # 
+                cbar2.ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))   
+                cbar2.update_ticks()  # 
 
                 plt.tight_layout()
                 frame_path = os.path.join(temp_dir, f"frame_{time_idx:03d}.png")

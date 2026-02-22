@@ -11,8 +11,8 @@ def build_dual_output_model(input_dim=None, latent_dim=None, output_timesteps=No
     inputs = layers.Input(shape=(input_dim,))
     
     # Dense encoder
-    x = layers.Dense(128, activation='relu')(inputs)
-    x = layers.Dense(latent_dim, activation='relu')(x)
+    x = layers.Dense(latent_dim, activation='relu')(inputs)
+    #x = layers.Dense(latent_dim, activation='relu')(x)
     
     # Repeat vector for LSTM
     x = layers.RepeatVector(output_timesteps)(x)
@@ -25,8 +25,8 @@ def build_dual_output_model(input_dim=None, latent_dim=None, output_timesteps=No
     disp_output = layers.Lambda(lambda t: tf.squeeze(t, axis=-1), name='dispVector_output')(x0)
     
     # Branch 1: 2D displacement field
-    x1 = layers.TimeDistributed(layers.Dense(dispfield_dim1 * dispfield_dim2 * latent_dim, activation='relu'))(x)
-    x1 = layers.TimeDistributed(layers.Reshape((dispfield_dim1, dispfield_dim2, latent_dim)))(x1)
+    x1 = layers.TimeDistributed(layers.Dense(dispfield_dim1 * dispfield_dim2 * 4, activation='relu'))(x)
+    x1 = layers.TimeDistributed(layers.Reshape((dispfield_dim1, dispfield_dim2, 4)))(x1)
     x1 = layers.TimeDistributed(layers.Conv2DTranspose(64, 3, strides=(1,1), padding='same', activation='relu'))(x1)
     x1 = layers.TimeDistributed(layers.Conv2DTranspose(32, 3, strides=(1,1), padding='same', activation='relu'))(x1)
     x1 = layers.TimeDistributed(layers.Conv2DTranspose(16, 3, strides=(1,1), padding='same', activation='relu'))(x1)

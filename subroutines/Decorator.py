@@ -16,13 +16,13 @@ sns.set(style="whitegrid", context="talk")
 def plot_style_decorator(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        plt.figure(figsize=(1, 1), dpi=150)
+        #plt.figure(figsize=(1, 1), dpi=150)
         ax = plt.gca()
         fig = plt.gcf()
 
         # Set black background
-        ax.set_facecolor('black')
-        fig.patch.set_facecolor('black')
+        # ax.set_facecolor('black')
+        # fig.patch.set_facecolor('black')
 
         # Hide top and right spines, set bottom and left spine colors
         ax.spines['top'].set_visible(False)
@@ -35,14 +35,10 @@ def plot_style_decorator(func):
         ax.tick_params(axis='y', colors='black', labelsize=14)
 
 
-
-        # Legend styling
-        plt.legend(loc='upper right', fontsize=12, facecolor='black', edgecolor='black', labelcolor='black')
-
         # Call the original plotting function
         result = func(*args, **kwargs)
 
-        plt.tight_layout()
+        #plt.tight_layout()
         plt.show()
 
         return result

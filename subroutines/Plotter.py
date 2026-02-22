@@ -6,7 +6,7 @@ import matplotlib as mpl
 import numpy as np
 import os
 from sklearn.metrics import r2_score
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error,mean_absolute_error,mean_absolute_percentage_error
 import seaborn as sns
 import imageio.v2 as imageio
 import matplotlib.gridspec as gridspec
@@ -80,7 +80,7 @@ class Plotter():
         fig, ax = plt.subplots(figsize=(4, 3), dpi = 150)
 
         ax.plot(history.history['loss'], label='Total Loss', color='black', linewidth=1.5)
-        ax.plot(history.history['dispVector_output_loss'], label='Disp. Vector Loss', color='dimgray', linewidth=1.2)
+        ax.plot(history.history['dispVector_output_loss'], label='Disp. Vector Loss', color='dimgray', linewidth=1.2,linestyle=':')
         ax.plot(history.history['dispField_output_loss'], label='Disp. Field Loss', color='gray', linewidth=1.2, linestyle='--')
 
         ax.set_yscale('log')
@@ -167,8 +167,26 @@ class Plotter():
             y_pred = np.asarray(y_pred)
             return np.sum(np.abs(y_pred - y_true)) / (np.sum(np.abs(y_true)) + 1e-8) *100
             
+        def rmse(y_true, y_pred):
+            return np.sqrt(mean_squared_error(y_true, y_pred)) *1000
+            
+        def relative_l2_error(y_true, y_pred):
+            return np.sqrt(np.sum((y_true - y_pred)**2)) / np.sqrt(np.sum(y_true**2))
+        def strong_structure_metric(y_true, y_pred):
+            y_true = np.array(y_true).ravel()
+            y_pred = np.array(y_pred).ravel()
+            
+            rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+            
+            slope, _ = np.polyfit(y_true, y_pred, 1)
+            slope_error = abs(slope - 1)
+            
+            score = rmse * (1 + slope_error)*1000
+            
+            return score
         # error metrics
-        error_rate = gnae(y_train, y_train_pred)    
+        error_rate = gnae(y_train, y_train_pred)   
+
             
         # starting to plot scatter plot of the training set results
         sns.scatterplot(x=y_train.flatten(), y=y_train_pred.flatten(), color='#2A9D8F', alpha=0.6, edgecolor=None)
@@ -179,7 +197,7 @@ class Plotter():
         lims = [all_vals.min(), all_vals.max()]
         plt.plot(lims, lims, linestyle='--', color='black', linewidth=1.0)
 
-        plt.title(f'GNAE = {error_rate:.2f}%', fontsize=16, color='black')
+        #plt.title(f'GNAE = {error_rate:.2f}', fontsize=16, color='black')
         
     @scatter_plot_style_decorator        
     def scatterTestdata(self):
@@ -192,8 +210,27 @@ class Plotter():
             y_true = np.asarray(y_true)
             y_pred = np.asarray(y_pred)
             return np.sum(np.abs(y_pred - y_true)) / (np.sum(np.abs(y_true)) + 1e-8) *100
+            
+        def rmse(y_true, y_pred):
+            return np.sqrt(mean_squared_error(y_true, y_pred)) *1000
+            
+        def relative_l2_error(y_true, y_pred):
+            return np.sqrt(np.sum((y_true - y_pred)**2)) / np.sqrt(np.sum(y_true**2))
+        def strong_structure_metric(y_true, y_pred):
+            y_true = np.array(y_true).ravel()
+            y_pred = np.array(y_pred).ravel()
+            
+            rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+            
+            slope, _ = np.polyfit(y_true, y_pred, 1)
+            slope_error = abs(slope - 1)
+            
+            score = rmse * (1 + slope_error)
+            
+            return score*1000
         # error metrics
-        error_rate = gnae(y_test, y_test_pred)  
+        error_rate = gnae(y_test, y_test_pred)
+
         
         # starting to plot scatter plot of the test set results
         sns.scatterplot(x=y_test.flatten(), y=y_test_pred.flatten(), color='#2A9D8F', alpha=0.6, edgecolor=None)
@@ -205,7 +242,7 @@ class Plotter():
         lims = [all_vals.min(), all_vals.max()]
         plt.plot(lims, lims, linestyle='--', color='black', linewidth=1.0)
 
-        plt.title(f'GNAE = {error_rate:.2f}%', fontsize=16, color='black')
+        #plt.title(f'GNAE = {error_rate:.2f}', fontsize=16, color='black')
 
         
     def disp_Vector(self,y_test0,shape0_test,y_test_pred0):
@@ -227,13 +264,13 @@ class Plotter():
 
             # Labels and title with black color
             ax.set_xlabel('Coordinate')
-            ax.set_ylabel('Ground surface settlement (m)')
-            ax.set_ylim(-0.2,0.31)
+            ax.set_ylabel('Surface settlement (m)')
+            #ax.set_ylim(-0.05,0.01)
             # Create empty lines for legend
             ax.plot([], [], label='True', color='#555555', linestyle='-')
             ax.plot([], [], label='Pred', color='#FF5733', linestyle='--')
             # Legend with black background and black text
-            ax.legend(loc='upper right', fontsize = 18, frameon=False)
+            ax.legend(loc='lower right', fontsize = 18, frameon=False)
 
         
         # Create interactive widgets for sample and time index selection
@@ -258,9 +295,9 @@ class Plotter():
             vmin = y_test1[sample_idx, time_idx].min()
             vmax = y_test1[sample_idx, time_idx].max()
             #ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
-            ticks = np.round(np.linspace(-0.15, 0, 6), 4) 
+            ticks = np.round(np.linspace(-0.035, 0, 6), 4) 
             
-            bounds = np.linspace(-0.15, 0, 7)
+            bounds = np.linspace(-0.035, 0, 7)
             norm = BoundaryNorm(boundaries=bounds, ncolors=256)
 
    
@@ -290,7 +327,7 @@ class Plotter():
             
             ax2 = fig.add_subplot(gs[2])
             error = y_test1[sample_idx, time_idx] - y_test_pred1[sample_idx, time_idx]
-            error[0,:] = 0
+            #error[0,:] = 0
             vmin = error.min()
             vmax = error.max()
             ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
@@ -334,9 +371,9 @@ class Plotter():
                 vmin = y_test1[sample_idx, time_idx].min()
                 vmax = y_test1[sample_idx, time_idx].max()
                 #ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
-                ticks = np.round(np.linspace(-0.15, 0, 6), 4) 
+                ticks = np.round(np.linspace(-0.035, 0, 6), 4) 
                 
-                bounds = np.linspace(-0.15, 0, 7)
+                bounds = np.linspace(-0.035, 0, 7)
                 norm = BoundaryNorm(boundaries=bounds, ncolors=256)
 
        
@@ -366,7 +403,7 @@ class Plotter():
                 
                 ax2 = fig.add_subplot(gs[2])
                 error = y_test1[sample_idx, time_idx] - y_test_pred1[sample_idx, time_idx]
-                error[0,:] = 0
+                #error[0,:] = 0
                 vmin = error.min()
                 vmax = error.max()
                 ticks = np.round(np.linspace(vmin, vmax, 6), 4) 
